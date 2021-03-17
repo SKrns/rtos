@@ -18,16 +18,16 @@
 		LDR PC, fiq_handler_addr
 
 		reset_handler_addr:     .word reset_handler
-        undef_handler_addr:     .word dummy_handler
-        svc_handler_addr:       .word dummy_handler
-        pftch_abt_handler_addr: .word dummy_handler
-        data_abt_handler_addr:  .word dummy_handler
-        irq_handler_addr:       .word dummy_handler
-        fiq_handler_addr:       .word dummy_handler
+                undef_handler_addr:     .word dummy_handler
+                svc_handler_addr:       .word dummy_handler
+                pftch_abt_handler_addr: .word dummy_handler
+                data_abt_handler_addr:  .word dummy_handler
+                irq_handler_addr:       .word Irq_Handler
+                fiq_handler_addr:       .word Fiq_Handler
 	vector_end:
 
 	reset_handler:
-		MRS r0, cpsr
+		      MRS r0, cpsr
                 BIC r1, r0, #0x1F
                 ORR r1, r1, #ARM_MODE_BIT_SVC
                 MSR cpsr, r1
