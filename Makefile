@@ -16,20 +16,24 @@ ASM_OBJS = $(patsubst boot/%.S, build/%.os, $(ASM_SRCS))
 
 VPATH = boot \
 		hal/$(TARGET) \
-		lib
+		lib \
+		kernel
 
 C_SRCS = $(notdir $(wildcard boot/*.c))
 C_SRCS += $(notdir $(wildcard hal/$(TARGET)/*.c))
 C_SRCS += $(notdir $(wildcard lib/*.c))
+C_SRCS += $(notdir $(wildcard kernel/*.c))
 C_OBJS = $(patsubst %.c, build/%.o, $(C_SRCS))
 
 INC_DIRS = -I include \
 			-I hal \
 			-I hal/$(TARGET) \
-			-I lib
+			-I lib \
+			-I kernel
 
 
 CFLAGS = -c -g -std=c11
+LDFLAGS = -nostartfiles -nostdlib -nodefaultlibs -static -lgcc
 
 ios = build/ios.axf
 ios_bin = build/ios.bin
@@ -54,7 +58,8 @@ kill:
 	kill -9 `ps aux | grep 'qemu' | awk 'NR==1{print $$2}'`
 
 $(ios) : $(ASM_OBJS) $(C_OBJS) $(LINKER_SCRIPT)
-	$(LD) -n -T $(LINKER_SCRIPT) -o $(ios) $(ASM_OBJS) $(C_OBJS) -Map=$(MAP_FILE)
+# 	$(LD) -n -T $(LINKER_SCRIPT) -o $(ios) $(ASM_OBJS) $(C_OBJS) -Map=$(MAP_FILE) 
+	$(CC) -n -T $(LINKER_SCRIPT) -o $(ios) $(ASM_OBJS) $(C_OBJS) -Wl,-Map=$(MAP_FILE) $(LDFLAGS)
 	$(OC) -O binary $(ios) $(ios_bin)
 
 build/%.os: %.S
